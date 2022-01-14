@@ -80,20 +80,24 @@ if __name__ == "__main__":
         with open(path_data+'\ANIMAL.csv', 'r', encoding='utf-8-sig') as f:
             reader = csv.DictReader(f, delimiter=";", quotechar='"')
             create = '''CREATE TABLE "ANIMAL" (
-                    "Animal_ID"	TEXT NOT NULL,
-                    "Name"	TEXT,
-                    "Sex"	TEXT,
-                    "Age"	INTEGER,
-                    "Date_of_birth"	INTEGER,
-                    "Origin"	TEXT,
-                    "Date_of_arrival"	INTEGER,
-                    "Diseases"	TEXT,
-                    "Species_ID"	TEXT NOT NULL,
-                    "Diet_program_code"	TEXT NOT NULL,
-                    "Medication_code"	TEXT,
-                    "Space_code"	INTEGER NOT NULL,
-                    PRIMARY KEY("Animal_ID")
-                );'''
+                        "Animal_ID"	TEXT NOT NULL,
+                        "Name"	TEXT,
+                        "Sex"	TEXT,
+                        "Age"	INTEGER,
+                        "Date_of_birth"	INTEGER,
+                        "Origin"	TEXT,
+                        "Date_of_arrival"	INTEGER,
+                        "Diseases"	TEXT,
+                        "Species_ID"	TEXT NOT NULL,
+                        "Diet_program_code"	TEXT,
+                        "Medication_code"	TEXT,
+                        "Space_code"	TEXT,
+                        PRIMARY KEY("Animal_ID"),
+                        FOREIGN KEY("Species_ID") REFERENCES "SPECIES"("Species_ID"),
+                        FOREIGN KEY("Diet_program_code") REFERENCES "DIET_PROGRAM"("Diet_program_code"),
+                        FOREIGN KEY("Medication_code") REFERENCES "MEDICATION"("Medication_code"),
+                        FOREIGN KEY("Space_code") REFERENCES "SPACE"("Space_code")
+                    );'''
 
             d.createTable(create)
             for row in reader:
@@ -104,10 +108,11 @@ if __name__ == "__main__":
         with open(path_data+'\ANIMAL_CARE_EMPLOYEE.csv', 'r', encoding='utf-8-sig') as f:
             reader = csv.DictReader(f, delimiter=";", quotechar='"')
             create = '''CREATE TABLE "ANIMAL_CARE_EMPLOYEE" (
-                    "Animal_care_emp_ID"	TEXT NOT NULL,
-                    "Emp_category"	TEXT,
-                    PRIMARY KEY("Animal_care_emp_ID")
-                );'''
+                        "Animal_care_emp_ID"	TEXT NOT NULL,
+                        "Emp_category"	TEXT,
+                        PRIMARY KEY("Animal_care_emp_ID"),
+                        FOREIGN KEY("Animal_care_emp_ID") REFERENCES "EMPLOYEE"("Employee_ID")
+                    );'''
 
             d.createTable(create)
             for row in reader:
@@ -124,7 +129,8 @@ if __name__ == "__main__":
                         "Visits"	INTEGER,
                         "TelNumber"	INTEGER,
                         "Card_code"	TEXT NOT NULL,
-                        PRIMARY KEY("Owner_ID")
+                        PRIMARY KEY("Owner_ID"),
+                        FOREIGN KEY("Card_code") REFERENCES "YEARLY_CARD"("Card_code")
                     );'''
 
             d.createTable(create)
@@ -138,7 +144,8 @@ if __name__ == "__main__":
             create = '''CREATE TABLE "CUSTOMER_SUPPORT" (
                         "CustSup_emp_ID"	TEXT NOT NULL,
                         "Emp_category"	TEXT,
-                        PRIMARY KEY("CustSup_emp_ID")
+                        PRIMARY KEY("CustSup_emp_ID"),
+                        FOREIGN KEY("CustSup_emp_ID") REFERENCES "EMPLOYEE"("Employee_ID")
                     );'''
 
             d.createTable(create)
@@ -186,7 +193,9 @@ if __name__ == "__main__":
                         "Price"	TEXT,
                         "Reservation_number"	TEXT,
                         "Sale_code"	TEXT,
-                        PRIMARY KEY("Document_code")
+                        FOREIGN KEY("Sale_code") REFERENCES "SALE_CATEGORY"("Sale_code"),
+                        PRIMARY KEY("Document_code"),
+                        FOREIGN KEY("Reservation_number") REFERENCES "RESERVATION"("Reservation_number")
                     );'''
 
             d.createTable(create)
@@ -204,6 +213,7 @@ if __name__ == "__main__":
                         "Duration"	TEXT,
                         "Weekly_program"	TEXT,
                         "Event_space_code"	TEXT,
+                        FOREIGN KEY("Event_space_code") REFERENCES "EVENT"("Event_code"),
                         PRIMARY KEY("Event_code")
                     );'''
 
@@ -217,6 +227,7 @@ if __name__ == "__main__":
             reader = csv.DictReader(f, delimiter=";", quotechar='"')
             create = '''CREATE TABLE "FOOD_SUPPLY" (
                         "Food_supply_code"	TEXT NOT NULL,
+                        FOREIGN KEY("Food_supply_code") REFERENCES "SUPPLY"("Supply_code"),
                         PRIMARY KEY("Food_supply_code")
                     );'''
 
@@ -275,6 +286,7 @@ if __name__ == "__main__":
             reader = csv.DictReader(f, delimiter=";", quotechar='"')
             create = '''CREATE TABLE "MEDICINE_SUPPLY" (
                         "Medicine_supply_code"	TEXT NOT NULL,
+                        FOREIGN KEY("Medicine_supply_code") REFERENCES "SUPPLY"("Supply_code"),
                         PRIMARY KEY("Medicine_supply_code")
                     );'''
 
@@ -336,6 +348,7 @@ if __name__ == "__main__":
             create = '''CREATE TABLE "SPACE_EMPLOYEE" (
                         "Space_emp_ID"	TEXT NOT NULL,
                         "Emp_category"	TEXT,
+                        FOREIGN KEY("Space_emp_ID") REFERENCES "EMPLOYEE"("Employee_ID"),
                         PRIMARY KEY("Space_emp_ID")
                     );'''
 
@@ -389,6 +402,7 @@ if __name__ == "__main__":
                         "Supply_date"	INTEGER,
                         "Price"	TEXT,
                         "Supplier_ID"	TEXT,
+                        FOREIGN KEY("Supplier_ID") REFERENCES "SUPPLIER"("Supplier_ID"),
                         PRIMARY KEY("Supply_code")
                     );''' 
 
@@ -403,6 +417,7 @@ if __name__ == "__main__":
             create = '''CREATE TABLE "TICKET" (
                         "Ticket_code"	TEXT NOT NULL,
                         "Ticket_date"	INTEGER,
+                        FOREIGN KEY("Ticket_code") REFERENCES "ENTRANCE_DOCUMENT"("Document_code"),
                         PRIMARY KEY("Ticket_code")
                     );'''
 
@@ -418,6 +433,7 @@ if __name__ == "__main__":
                         "Card_code"	TEXT NOT NULL,
                         "Start_date"	INTEGER,
                         "End_date"	INTEGER,
+                        FOREIGN KEY("Card_code") REFERENCES "ENTRANCE_DOCUMENT"("Document_code"),
                         PRIMARY KEY("Card_code")
                     );'''
 
@@ -432,6 +448,8 @@ if __name__ == "__main__":
             create = '''CREATE TABLE "belongs_in_diet" (
                         "Food_type_code"	TEXT NOT NULL,
                         "Diet_program_code"	TEXT NOT NULL,
+                        FOREIGN KEY("Food_type_code") REFERENCES "FOOD_TYPE"("Food_type_code"),
+                        FOREIGN KEY("Diet_program_code") REFERENCES "DIET_PROGRAM"("Diet_program_code"),
                         PRIMARY KEY("Food_type_code","Diet_program_code")
                     );''' 
 
@@ -447,6 +465,8 @@ if __name__ == "__main__":
                         "Dosage"	TEXT,
                         "Medicine_code"	TEXT NOT NULL,
                         "Medication_code"	TEXT NOT NULL,
+                        FOREIGN KEY("Medication_code") REFERENCES "MEDICATION"("Medication_code"),
+                        FOREIGN KEY("Medicine_code") REFERENCES "MEDICINE"("Medicine_code"),
                         PRIMARY KEY("Medicine_code","Medication_code")
                     );'''
 
@@ -461,6 +481,8 @@ if __name__ == "__main__":
             create = '''CREATE TABLE "cares_for" (
                         "Animal_ID"	TEXT NOT NULL,
                         "Emp_ID"	TEXT NOT NULL,
+                        FOREIGN KEY("Animal_ID") REFERENCES "ANIMAL"("Animal_ID"),
+                        FOREIGN KEY("Emp_ID") REFERENCES "EMPLOYEE"("Employee_ID"),
                         PRIMARY KEY("Animal_ID","Emp_ID")
                     );''' 
 
@@ -477,6 +499,8 @@ if __name__ == "__main__":
                         "Price"	TEXT,
                         "Food_supply_code"	TEXT NOT NULL,
                         "Food_type_code"	TEXT NOT NULL,
+                        FOREIGN KEY("Food_supply_code") REFERENCES "FOOD_SUPPLY"("Food_supply_code"),
+                        FOREIGN KEY("Food_type_code") REFERENCES "FOOD_TYPE"("Food_type_code"),
                         PRIMARY KEY("Food_supply_code","Food_type_code")
                     );''' 
 
@@ -493,6 +517,8 @@ if __name__ == "__main__":
                         "Price_per_piece"	TEXT,
                         "Medicine_code"	TEXT NOT NULL,
                         "Medicine_supply_code"	TEXT NOT NULL,
+                        FOREIGN KEY("Medicine_supply_code") REFERENCES "MEDICINE_SUPPLY"("Medicine_supply_code"),
+                        FOREIGN KEY("Medicine_code") REFERENCES "MEDICINE"("Medicine_code"),
                         PRIMARY KEY("Medicine_supply_code","Medicine_code")
                     );'''
 
@@ -507,6 +533,8 @@ if __name__ == "__main__":
             create = '''CREATE TABLE "contains" (
                         "Event_code"	TEXT NOT NULL,
                         "Document_code"	TEXT NOT NULL,
+                        FOREIGN KEY("Event_code") REFERENCES "EVENT"("Event_code"),
+                        FOREIGN KEY("Document_code") REFERENCES "ENTRANCE_DOCUMENT"("Document_code"),
                         PRIMARY KEY("Event_code","Document_code")
                     );'''
 
@@ -521,6 +549,8 @@ if __name__ == "__main__":
             create = '''CREATE TABLE "oversees" (
                         "Space_code"	TEXT NOT NULL,
                         "Emp_ID"	TEXT NOT NULL,
+                        FOREIGN KEY("Emp_ID") REFERENCES "EMPLOYEE"("Employee_ID"),
+                        FOREIGN KEY("Space_code") REFERENCES "SPACE"("Space_code"),
                         PRIMARY KEY("Space_code","Emp_ID")
                     );'''
 
@@ -535,6 +565,8 @@ if __name__ == "__main__":
             create = '''CREATE TABLE "participates_in" (
                         "Event_code"	TEXT NOT NULL,
                         "Animal_ID"	TEXT NOT NULL,
+                        FOREIGN KEY("Animal_ID") REFERENCES "ANIMAL"("Animal_ID"),
+                        FOREIGN KEY("Event_code") REFERENCES "EVENT"("Event_code"),
                         PRIMARY KEY("Event_code","Animal_ID")
                     );''' 
 
