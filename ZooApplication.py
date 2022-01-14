@@ -9,7 +9,7 @@ class DataModel():
         self.filename = filename
         try:
             self.con = sqlite3.connect(filename)
-            self.con.row_factory = sqlite3.Row  # ώστε να πάρουμε τα ονόματα των στηλών του πίνακα
+            self.con.row_factory = sqlite3.Row 
             self.cursor = self.con.cursor()
             print("Successful connection to database", filename)
             sqlite_select_Query = "select sqlite_version();"
@@ -43,7 +43,6 @@ class DataModel():
 
     def createTable(self, sql): 
         self.cursor.execute(sql)
-        #print('table created')
 
     def readTable(self, table):
         
@@ -81,53 +80,132 @@ if __name__ == "__main__":
         with open(path_data+'\ANIMAL.csv', 'r', encoding='utf-8-sig') as f:
             reader = csv.DictReader(f, delimiter=";", quotechar='"')
             create = '''CREATE TABLE "ANIMAL" (
-	                    "Animal_ID"	TEXT NOT NULL,
-	                    "Name"	TEXT,
-                        "Sex"	TEXT,
-                        "Age"	INTEGER,
-                        "Date_of_birth"	INTEGER,
-                        "Origin"	TEXT,
-                        "Date_of_arrival"	INTEGER,
-                        "Diseases"	TEXT,
-                        "Species_ID"	INTEGER,
-                        "Diet_program_code"	TEXT,
-                        "Medication_code"	TEXT,
-                        "Space_ID"	TEXT,
-                        PRIMARY KEY("Animal_ID")
-                    );'''
+                    "Animal_ID"	TEXT NOT NULL,
+                    "Name"	TEXT,
+                    "Sex"	TEXT,
+                    "Age"	INTEGER,
+                    "Date_of_birth"	INTEGER,
+                    "Origin"	TEXT,
+                    "Date_of_arrival"	INTEGER,
+                    "Diseases"	TEXT,
+                    "Species_ID"	TEXT NOT NULL,
+                    "Diet_program_code"	TEXT NOT NULL,
+                    "Medication_code"	TEXT,
+                    "Space_code"	INTEGER NOT NULL,
+                    PRIMARY KEY("Animal_ID")
+                );'''
 
             d.createTable(create)
             for row in reader:
                 sql = f'INSERT INTO ANIMAL VALUES("{row["Animal_ID"]}", "{row["Name"]}","{row["Sex"]}", "{row["Age"]}", "{row["Date_of_birth"]}", "{row["Origin"]}", "{row["Date_of_arrival"]}", "{row["Diseases"]}", "{row["Species_ID"]}", "{row["Diet_program_code"]}", "{row["Medication_code"]}", "{row["Space_code"]}");\n'             
-                d.insert(sql, row)          
+                d.insert(sql, row)   
+
+    def load_ANIMAL_CARE_EMPLOYEE(): 
+        with open(path_data+'\ANIMAL_CARE_EMPLOYEE.csv', 'r', encoding='utf-8-sig') as f:
+            reader = csv.DictReader(f, delimiter=";", quotechar='"')
+            create = '''CREATE TABLE "ANIMAL_CARE_EMPLOYEE" (
+                    "Animal_care_emp_ID"	TEXT NOT NULL,
+                    "Emp_category"	TEXT,
+                    PRIMARY KEY("Animal_care_emp_ID")
+                );'''
+
+            d.createTable(create)
+            for row in reader:
+                sql = f'INSERT INTO ANIMAL_CARE_EMPLOYEE VALUES("{row["Animal_care_emp_ID"]}", "{row["Emp_category"]}");\n'
+                d.insert(sql, row)  
+
+    def load_CARD_OWNER(): 
+        with open(path_data+'\CARD_OWNER.csv', 'r', encoding='utf-8-sig') as f:
+            reader = csv.DictReader(f, delimiter=";", quotechar='"')
+            create = '''CREATE TABLE "CARD_OWNER" (
+                        "Owner_ID"	TEXT NOT NULL,
+                        "Name"	TEXT,
+                        "Status"	TEXT,
+                        "Visits"	INTEGER,
+                        "TelNumber"	INTEGER,
+                        "Card_code"	TEXT NOT NULL,
+                        PRIMARY KEY("Owner_ID")
+                    );'''
+
+            d.createTable(create)
+            for row in reader:
+                sql = f'INSERT INTO CARD_OWNER VALUES("{row["Owner_ID"]}", "{row["Name"]}", "{row["Status"]}", "{row["Visits"]}", "{row["TelNumber"]}", "{row["Card_code"]}");\n'
+                d.insert(sql, row)    
+
+    def load_CUSTOMER_SUPPORT(): 
+        with open(path_data+'\CUSTOMER_SUPPORT.csv', 'r', encoding='utf-8-sig') as f:
+            reader = csv.DictReader(f, delimiter=";", quotechar='"')
+            create = '''CREATE TABLE "CUSTOMER_SUPPORT" (
+                        "CustSup_emp_ID"	TEXT NOT NULL,
+                        "Emp_category"	TEXT,
+                        PRIMARY KEY("CustSup_emp_ID")
+                    );'''
+
+            d.createTable(create)
+            for row in reader:
+                sql = f'INSERT INTO CUSTOMER_SUPPORT VALUES("{row["CustSup_emp_ID"]}", "{row["Emp_category"]}");\n'
+                d.insert(sql, row) 
 
     def load_DIET_PROGRAM(): 
         with open(path_data+'\DIET_PROGRAM.csv', 'r', encoding='utf-8-sig') as f:
             reader = csv.DictReader(f, delimiter=";", quotechar='"')
             create = '''CREATE TABLE "DIET_PROGRAM" (
-                	"Diet_program_code"	TEXT NOT NULL,
-                    "Start date"	TEXT,
-                    "End date"	TEXT,
-                    PRIMARY KEY("Diet_program_code")
-                );'''
+                        "Diet_program_code"	TEXT NOT NULL,
+                        "Start_date"	INTEGER,
+                        "End_date"	INTEGER,
+                        PRIMARY KEY("Diet_program_code")
+                    );'''
 
             d.createTable(create)
             for row in reader:
                 sql = f'INSERT INTO DIET_PROGRAM VALUES("{row["Diet_program_code"]}", "{row["Start_date"]}", "{row["End_date"]}");\n'             
                 d.insert(sql, row)
 
+    def load_EMPLOYEE(): 
+        with open(path_data+'\EMPLOYEE.csv', 'r', encoding='utf-8-sig') as f:
+            reader = csv.DictReader(f, delimiter=";", quotechar='"')
+            create = '''CREATE TABLE "EMPLOYEE" (
+                        "Employee_ID"	TEXT NOT NULL,
+                        "Name"	TEXT,
+                        "Address"	TEXT,
+                        "TelNumber"	INTEGER,
+                        "Work_hours"	TEXT,
+                        PRIMARY KEY("Employee_ID")
+                    );'''
+
+            d.createTable(create)
+            for row in reader:
+                sql = f'INSERT INTO EMPLOYEE VALUES("{row["Employee_ID"]}", "{row["Name"]}", "{row["Address"]}", "{row["TelNumber"]}", "{row["Work_hours"]}");\n'
+                d.insert(sql, row)
+
+    def load_ENTRANCE_DOCUMENT(): 
+        with open(path_data+'\ENTRANCE_DOCUMENT.csv', 'r', encoding='utf-8-sig') as f:
+            reader = csv.DictReader(f, delimiter=";", quotechar='"')
+            create = '''CREATE TABLE "ENTRANCE_DOCUMENT" (
+                        "Document_code"	TEXT NOT NULL,
+                        "Price"	TEXT,
+                        "Reservation_number"	TEXT,
+                        "Sale_code"	TEXT,
+                        PRIMARY KEY("Document_code")
+                    );'''
+
+            d.createTable(create)
+            for row in reader:
+                sql = f'INSERT INTO ENTRANCE_DOCUMENT VALUES("{row["Document_code"]}", "{row["Price"]}", "{row["Reservation_number"]}", "{row["Sale_code"]}");\n'
+                d.insert(sql, row)
+
     def load_EVENT(): 
         with open(path_data+'\EVENT.csv', 'r', encoding='utf-8-sig') as f:
             reader = csv.DictReader(f, delimiter=";", quotechar='"')
             create = '''CREATE TABLE "EVENT" (
-                    "Event_code"	TEXT NOT NULL,
-                    "Name"	TEXT,
-                    "Start_time "	TEXT,
-                    "Duration "	TEXT,
-                    "Weekly_program"	TEXT,
-                    "Event_space_code"	TEXT NOT NULL,
-                    PRIMARY KEY("Event_code")
-                );'''
+                        "Event_code"	TEXT NOT NULL,
+                        "Name"	TEXT,
+                        "Start_time"	TEXT,
+                        "Duration"	TEXT,
+                        "Weekly_program"	TEXT,
+                        "Event_space_code"	TEXT,
+                        PRIMARY KEY("Event_code")
+                    );'''
 
             d.createTable(create)
             for row in reader:
@@ -151,38 +229,126 @@ if __name__ == "__main__":
         with open(path_data+'\FOOD_TYPE.csv', 'r', encoding='utf-8-sig') as f:
             reader = csv.DictReader(f, delimiter=";", quotechar='"')
             create = '''CREATE TABLE "FOOD_TYPE" (
-                    "Food_type_code"	TEXT NOT NULL,
-                    "Name"	TEXT,
-                    "Stock"	TEXT,
-                    PRIMARY KEY("Food_type_code")
-                );'''
+                        "Food_type_code"	TEXT NOT NULL,
+                        "Name"	TEXT,
+                        "Stock"	TEXT,
+                        PRIMARY KEY("Food_type_code")
+                    );'''
 
             d.createTable(create)
             for row in reader:
                 sql = f'INSERT INTO FOOD_TYPE VALUES("{row["Food_type_code"]}", "{row["Name"]}", "{row["Stock"]}");\n'             
                 d.insert(sql, row)
 
+    def load_MEDICATION(): 
+        with open(path_data+'\MEDICATION.csv', 'r', encoding='utf-8-sig') as f:
+            reader = csv.DictReader(f, delimiter=";", quotechar='"')
+            create = '''CREATE TABLE "MEDICATION" (
+                        "Medication_code"	TEXT NOT NULL,
+                        "Start_date"	INTEGER,
+                        "End_date"	INTEGER,
+                        PRIMARY KEY("Medication_code")
+                    );'''
+
+            d.createTable(create)
+            for row in reader:
+                sql = f'INSERT INTO MEDICATION VALUES("{row["Medication_code"]}", "{row["Start_date"]}", "{row["End_date"]}");\n'
+                d.insert(sql, row)
+
+    def load_MEDICINE(): 
+        with open(path_data+'\MEDICINE.csv', 'r', encoding='utf-8-sig') as f:
+            reader = csv.DictReader(f, delimiter=";", quotechar='"')
+            create = '''CREATE TABLE "MEDICINE" (
+                        "Medicine_code"	TEXT NOT NULL,
+                        "Stock (pcs)"	TEXT,
+                        "Name"	TEXT,
+                        PRIMARY KEY("Medicine_code")
+                    );'''
+
+            d.createTable(create)
+            for row in reader:
+                sql = f'INSERT INTO MEDICINE VALUES("{row["Medicine_code"]}", "{row["Stock (pcs)"]}", "{row["Name"]}");\n'
+                d.insert(sql, row)
+
+    def load_MEDICINE_SUPPLY(): 
+        with open(path_data+'\MEDICINE_SUPPLY.csv', 'r', encoding='utf-8-sig') as f:
+            reader = csv.DictReader(f, delimiter=";", quotechar='"')
+            create = '''CREATE TABLE "MEDICINE_SUPPLY" (
+                        "Medicine_supply_code"	TEXT NOT NULL,
+                        PRIMARY KEY("Medicine_supply_code")
+                    );'''
+
+            d.createTable(create)
+            for row in reader:
+                sql = f'INSERT INTO MEDICINE_SUPPLY VALUES("{row["Medicine_supply_code"]}");\n'
+                d.insert(sql, row)
+
+    def load_RESERVATION(): 
+        with open(path_data+'\RESERVATION.csv', 'r', encoding='utf-8-sig') as f:
+            reader = csv.DictReader(f, delimiter=";", quotechar='"')
+            create = '''CREATE TABLE "RESERVATION" (
+                        "Reservation_number"	TEXT NOT NULL,
+                        "Name"	TEXT,
+                        "Reservation_date"	INTEGER,
+                        "Num_of_visitors"	INTEGER,
+                        PRIMARY KEY("Reservation_number")
+                    );'''
+
+            d.createTable(create)
+            for row in reader:
+                sql = f'INSERT INTO RESERVATION VALUES("{row["Reservation_number"]}", "{row["Name"]}", "{row["Reservation_date"]}", "{row["Num_of_visitors"]}");\n'
+                d.insert(sql, row)
+
+    def load_SALE_CATEGORY(): 
+        with open(path_data+'\SALE_CATEGORY.csv', 'r', encoding='utf-8-sig') as f:
+            reader = csv.DictReader(f, delimiter=";", quotechar='"')
+            create = '''CREATE TABLE "SALE_CATEGORY" (
+                        "Sale_code"	TEXT NOT NULL,
+                        "Required_documents"	TEXT,
+                        "Sale_percentage"	TEXT,
+                        PRIMARY KEY("Sale_code")
+                    );'''
+
+            d.createTable(create)
+            for row in reader:
+                sql = f'INSERT INTO SALE_CATEGORY VALUES("{row["Sale_code"]}", "{row["Required_documents"]}", "{row["Sale_percentage"]}");\n'
+                d.insert(sql, row)
+
     def load_SPACE(): 
         with open(path_data+'\SPACE.csv', 'r', encoding='utf-8-sig') as f:
             reader = csv.DictReader(f, delimiter=";", quotechar='"')
             create = '''CREATE TABLE "SPACE" (
-                    "Space_code"	TEXT NOT NULL,
-                    "Name"	TEXT,
-                    "Location"	TEXT,
-                    "Op_hours"	TEXT,
-                    PRIMARY KEY("Space_code")
-                );'''
+                        "Space_code"	TEXT NOT NULL,
+                        "Name"	TEXT,
+                        "Location"	TEXT,
+                        "Op_hours"	TEXT,
+                        PRIMARY KEY("Space_code")
+                    );'''
 
             d.createTable(create)
             for row in reader:
                 sql = f'INSERT INTO SPACE VALUES("{row["Space_code"]}", "{row["Name"]}", "{row["Location"]}", "{row["Op_hours"]}");\n'             
+                d.insert(sql, row)
+
+    def load_SPACE_EMPLOYEE(): 
+        with open(path_data+'\SPACE_EMPLOYEE.csv', 'r', encoding='utf-8-sig') as f:
+            reader = csv.DictReader(f, delimiter=";", quotechar='"')
+            create = '''CREATE TABLE "SPACE_EMPLOYEE" (
+                        "Space_emp_ID"	TEXT NOT NULL,
+                        "Emp_category"	TEXT,
+                        PRIMARY KEY("Space_emp_ID")
+                    );'''
+
+            d.createTable(create)
+            for row in reader:
+                sql = f'INSERT INTO SPACE_EMPLOYEE VALUES("{row["Space_emp_ID"]}", "{row["Emp_category"]}");\n'
                 d.insert(sql, row)
         
     def load_SPECIES(): 
         with open(path_data+'\SPECIES.csv', 'r', encoding='utf-8-sig') as f:
             reader = csv.DictReader(f, delimiter=";", quotechar='"')
             create = '''CREATE TABLE "SPECIES" (
-                        "Species_ID"	INTEGER NOT NULL,
+                        "Species_ID"	TEXT NOT NULL,
                         "Name"	TEXT,
                         "Scientific_name"	TEXT,
                         "Category"	TEXT,
@@ -220,192 +386,25 @@ if __name__ == "__main__":
             reader = csv.DictReader(f, delimiter=";", quotechar='"')
             create = '''CREATE TABLE "SUPPLY" (
                         "Supply_code"	TEXT NOT NULL,
+                        "Supply_date"	INTEGER,
                         "Price"	TEXT,
-                        "Supply_date"	TEXT,
                         "Supplier_ID"	TEXT,
                         PRIMARY KEY("Supply_code")
                     );''' 
 
             d.createTable(create)
             for row in reader:
-                sql = f'INSERT INTO SUPPLY VALUES("{row["Supply_code"]}", "{row["Date"]}", "{row["Price"]}", "{row["Supplier_ID"]}");\n'
-                d.insert(sql, row)
-
-    def load_ANIMAL_CARE_EMPLOYEE(): 
-        with open(path_data+'\ANIMAL_CARE_EMPLOYEE.csv', 'r', encoding='utf-8-sig') as f:
-            reader = csv.DictReader(f, delimiter=";", quotechar='"')
-            create = '''CREATE TABLE "ANIMAL_CARE_EMPLOYEE" (
-                    "Animal_care_emp_ID"	TEXT NOT NULL,
-                    "Employee_category"	TEXT,
-                    PRIMARY KEY("Animal_care_emp_ID")
-                );'''
-
-            d.createTable(create)
-            for row in reader:
-                sql = f'INSERT INTO ANIMAL_CARE_EMPLOYEE VALUES("{row["Animal_care_emp_ID"]}", "{row["Employee_category"]}");\n'
-                d.insert(sql, row)
-
-    def load_CARD_OWNER(): 
-        with open(path_data+'\CARD_OWNER.csv', 'r', encoding='utf-8-sig') as f:
-            reader = csv.DictReader(f, delimiter=";", quotechar='"')
-            create = '''CREATE TABLE "CARD_OWNER" (
-                    "Owner_ID"	TEXT NOT NULL,
-                    "Name"	TEXT,
-                    "Status"	TEΧΤ,
-                    "Visits"	INTEGER,
-                    "TelNumber"	INTEGER,
-                    "Card_code"	TEXT NOT NULL,
-                    PRIMARY KEY("Owner_ID","Card_code")
-                );'''
-
-            d.createTable(create)
-            for row in reader:
-                sql = f'INSERT INTO CARD_OWNER VALUES("{row["Owner_ID"]}", "{row["Name"]}", "{row["Status"]}", "{row["Visits"]}", "{row["TelNumber"]}", "{row["Card_code"]}");\n'
-                d.insert(sql, row)
-
-    def load_CUSTOMER_SUPPORT(): 
-        with open(path_data+'\CUSTOMER_SUPPORT.csv', 'r', encoding='utf-8-sig') as f:
-            reader = csv.DictReader(f, delimiter=";", quotechar='"')
-            create = '''CREATE TABLE "CUSTOMER_SUPPORT" (
-                    "CustSup_emp_ID"	TEXT NOT NULL,
-                    "Emp_category"	TEXT,
-                    PRIMARY KEY("CustSup_emp_ID")
-                );'''
-
-            d.createTable(create)
-            for row in reader:
-                sql = f'INSERT INTO CUSTOMER_SUPPORT VALUES("{row["CustSup_emp_ID"]}", "{row["Emp_category"]}");\n'
-                d.insert(sql, row)
-
-    def load_EMPLOYEE(): 
-        with open(path_data+'\EMPLOYEE.csv', 'r', encoding='utf-8-sig') as f:
-            reader = csv.DictReader(f, delimiter=";", quotechar='"')
-            create = '''CREATE TABLE "EMPLOYEE" (
-                    "Employee_ID"	TEXT NOT NULL,
-                    "Name"	TEXT,
-                    "Address"	TEXT,
-                    "TelNumber"	INTEGER,
-                    "Work_hours"	TEXT,
-                    PRIMARY KEY("Employee_ID")
-                );'''
-
-            d.createTable(create)
-            for row in reader:
-                sql = f'INSERT INTO EMPLOYEE VALUES("{row["Employee_ID"]}", "{row["Name"]}", "{row["Address"]}", "{row["TelNumber"]}", "{row["Work_hours"]}");\n'
-                d.insert(sql, row)
-
-    def load_ENTRANCE_DOCUMENT(): 
-        with open(path_data+'\ENTRANCE_DOCUMENT.csv', 'r', encoding='utf-8-sig') as f:
-            reader = csv.DictReader(f, delimiter=";", quotechar='"')
-            create = '''CREATE TABLE "ENTRANCE_DOCUMENT" (
-                    "Document_code"	TEXT NOT NULL,
-                    "Price"	TEXT,
-                    "Reservation_number"	TEXT,
-                    "Sale_code"	TEXT,
-                    PRIMARY KEY("Document_code")
-                );'''
-
-            d.createTable(create)
-            for row in reader:
-                sql = f'INSERT INTO ENTRANCE_DOCUMENT VALUES("{row["Document_code"]}", "{row["Price"]}", "{row["Reservation_number"]}", "{row["Sale_code"]}");\n'
-                d.insert(sql, row)
-
-    def load_MEDICATION(): 
-        with open(path_data+'\MEDICATION.csv', 'r', encoding='utf-8-sig') as f:
-            reader = csv.DictReader(f, delimiter=";", quotechar='"')
-            create = '''CREATE TABLE "MEDICATION" (
-                    "Medication_code"	TEXT NOT NULL,
-                    "Start_date"	TEXT,
-                    "End_date"	TEXT,
-                    PRIMARY KEY("Medication_code")
-                );'''
-
-            d.createTable(create)
-            for row in reader:
-                sql = f'INSERT INTO MEDICATION VALUES("{row["Medication_code"]}", "{row["Start_date"]}", "{row["End_date"]}");\n'
-                d.insert(sql, row)
-
-    def load_MEDICINE(): 
-        with open(path_data+'\MEDICINE.csv', 'r', encoding='utf-8-sig') as f:
-            reader = csv.DictReader(f, delimiter=";", quotechar='"')
-            create = '''CREATE TABLE "MEDICINE" (
-                    "Medicine_code"	TEXT NOT NULL,
-                    "Stock (pcs)"	INTEGER,
-                    "Name"	TEXT,
-                    PRIMARY KEY("Medicine_code")
-                );'''
-
-            d.createTable(create)
-            for row in reader:
-                sql = f'INSERT INTO MEDICINE VALUES("{row["Medicine_code"]}", "{row["Stock (pcs)"]}", "{row["Name"]}");\n'
-                d.insert(sql, row)
-
-    def load_MEDICINE_SUPPLY(): 
-        with open(path_data+'\MEDICINE_SUPPLY.csv', 'r', encoding='utf-8-sig') as f:
-            reader = csv.DictReader(f, delimiter=";", quotechar='"')
-            create = '''CREATE TABLE "MEDICINE_SUPPLY" (
-                    "Medicine_supply_code"	TEXT NOT NULL,
-                    PRIMARY KEY("Medicine_supply_code")
-                );'''
-
-            d.createTable(create)
-            for row in reader:
-                sql = f'INSERT INTO MEDICINE_SUPPLY VALUES("{row["Medicine_supply_code"]}");\n'
-                d.insert(sql, row)
-
-    def load_RESERVATION(): 
-        with open(path_data+'\RESERVATION.csv', 'r', encoding='utf-8-sig') as f:
-            reader = csv.DictReader(f, delimiter=";", quotechar='"')
-            create = '''CREATE TABLE "RESERVATION" (
-                        "Reservation_number"	TEXT NOT NULL,
-                        "Name"	TEXT,
-                        "Reservation_date"	TEXT,
-                        "Num_of_visitors"	INTEGER,
-                        PRIMARY KEY("Reservation_number")
-                    );'''
-
-            d.createTable(create)
-            for row in reader:
-                sql = f'INSERT INTO RESERVATION VALUES("{row["Reservation_number"]}", "{row["Name"]}", "{row["Reservation_date"]}", "{row["Num_of_visitors"]}");\n'
-                d.insert(sql, row)
-
-    def load_SALE_CATEGORY(): 
-        with open(path_data+'\SALE_CATEGORY.csv', 'r', encoding='utf-8-sig') as f:
-            reader = csv.DictReader(f, delimiter=";", quotechar='"')
-            create = '''CREATE TABLE "SALE_CATEGORY" (
-                    "Sale_code"	TEXT NOT NULL,
-                    "Required_documents"	TEXT,
-                    "Sale_percentage"	TEXT,
-                    PRIMARY KEY("Sale_code")
-                );'''
-
-            d.createTable(create)
-            for row in reader:
-                sql = f'INSERT INTO SALE_CATEGORY VALUES("{row["Sale_code"]}", "{row["Required_documents"]}", "{row["Sale_percentage"]}");\n'
-                d.insert(sql, row)
-
-    def load_SPACE_EMPLOYEE(): 
-        with open(path_data+'\SPACE_EMPLOYEE.csv', 'r', encoding='utf-8-sig') as f:
-            reader = csv.DictReader(f, delimiter=";", quotechar='"')
-            create = '''CREATE TABLE "SPACE_EMPLOYEE" (
-                    "Space_emp_ID"	TEXT NOT NULL,
-                    "Emp_category"	TEXT,
-                    PRIMARY KEY("Space_emp_ID")
-                );'''
-
-            d.createTable(create)
-            for row in reader:
-                sql = f'INSERT INTO SPACE_EMPLOYEE VALUES("{row["Space_emp_ID"]}", "{row["Emp_category"]}");\n'
+                sql = f'INSERT INTO SUPPLY VALUES("{row["Supply_code"]}", "{row["Supply_date"]}", "{row["Price"]}", "{row["Supplier_ID"]}");\n'
                 d.insert(sql, row)
 
     def load_TICKET(): 
         with open(path_data+'\TICKET.csv', 'r', encoding='utf-8-sig') as f:
             reader = csv.DictReader(f, delimiter=";", quotechar='"')
             create = '''CREATE TABLE "TICKET" (
-                    "Ticket_code"	TEXT NOT NULL,
-                    "Ticket_date"	INTEGER,
-                    PRIMARY KEY("Ticket_code")
-                );'''
+                        "Ticket_code"	TEXT NOT NULL,
+                        "Ticket_date"	INTEGER,
+                        PRIMARY KEY("Ticket_code")
+                    );'''
 
             d.createTable(create)
             for row in reader:
@@ -431,44 +430,14 @@ if __name__ == "__main__":
         with open(path_data+'\\belongs_in_diet.csv', 'r', encoding='utf-8-sig') as f:
             reader = csv.DictReader(f, delimiter=";", quotechar='"')
             create = '''CREATE TABLE "belongs_in_diet" (
-                                "Food_type_code"	TEXT,
-                                "Diet_program_code"	TEXT,
-                                PRIMARY KEY("Food_type_code","Diet_program_code")
-                            );''' 
+                        "Food_type_code"	TEXT NOT NULL,
+                        "Diet_program_code"	TEXT NOT NULL,
+                        PRIMARY KEY("Food_type_code","Diet_program_code")
+                    );''' 
 
             d.createTable(create)
             for row in reader:
                 sql = f'INSERT INTO belongs_in_diet VALUES("{row["Food_type_code"]}", "{row["Diet_program_code"]}");\n'
-                d.insert(sql, row)
-
-    def load_consists_of_diet(): 
-        with open(path_data+'\consists_of_diet.csv', 'r', encoding='utf-8-sig') as f:
-            reader = csv.DictReader(f, delimiter=";", quotechar='"')
-            create = '''CREATE TABLE "consists_of_diet" (
-                                "Quantity"	TEXT,
-                                "Price"	TEXT,
-                                "Supply_code"	TEXT NOT NULL,
-                                "Food_type_code"	TEXT NOT NULL,
-                                PRIMARY KEY("Food_type_code","Supply_code")
-                            );''' 
-
-            d.createTable(create)
-            for row in reader:
-                sql = f'INSERT INTO consists_of_diet VALUES("{row["Quantity"]}", "{row["Price"]}", "{row["Food_supply_code"]}", "{row["Food_type_code"]}");\n'
-                d.insert(sql, row)
-
-    def load_participates_in(): 
-        with open(path_data+'\participates_in.csv', 'r', encoding='utf-8-sig') as f:
-            reader = csv.DictReader(f, delimiter=";", quotechar='"')
-            create = '''CREATE TABLE "participates_in" (
-                            "Event_code"	TEXT NOT NULL,
-                            "Animal_ID"	TEXT NOT NULL,
-                            PRIMARY KEY("Event_code","Animal_ID")
-                        );''' 
-
-            d.createTable(create)
-            for row in reader:
-                sql = f'INSERT INTO participates_in VALUES("{row["Event_code"]}", "{row["Animal_ID"]}");\n'
                 d.insert(sql, row)
 
     def load_belongs_in_medication(): 
@@ -486,6 +455,36 @@ if __name__ == "__main__":
                 sql = f'INSERT INTO belongs_in_medication VALUES("{row["Dosage"]}", "{row["Medicine_code"]}", "{row["Medication_code"]}");\n'
                 d.insert(sql, row)
 
+    def load_cares_for(): 
+        with open(path_data+'\cares_for.csv', 'r', encoding='utf-8-sig') as f:
+            reader = csv.DictReader(f, delimiter=";", quotechar='"')
+            create = '''CREATE TABLE "cares_for" (
+                        "Animal_ID"	TEXT NOT NULL,
+                        "Emp_ID"	TEXT NOT NULL,
+                        PRIMARY KEY("Animal_ID","Emp_ID")
+                    );''' 
+
+            d.createTable(create)
+            for row in reader:
+                sql = f'INSERT INTO cares_for VALUES("{row["Animal_ID"]}", "{row["Emp_ID"]}");\n'
+                d.insert(sql, row)
+
+    def load_consists_of_diet(): 
+        with open(path_data+'\consists_of_diet.csv', 'r', encoding='utf-8-sig') as f:
+            reader = csv.DictReader(f, delimiter=";", quotechar='"')
+            create = '''CREATE TABLE "consists_of_diet" (
+                        "Quantity"	TEXT,
+                        "Price"	TEXT,
+                        "Food_supply_code"	TEXT NOT NULL,
+                        "Food_type_code"	TEXT NOT NULL,
+                        PRIMARY KEY("Food_supply_code","Food_type_code")
+                    );''' 
+
+            d.createTable(create)
+            for row in reader:
+                sql = f'INSERT INTO consists_of_diet VALUES("{row["Quantity"]}", "{row["Price"]}", "{row["Food_supply_code"]}", "{row["Food_type_code"]}");\n'
+                d.insert(sql, row)
+
     def load_consists_of_medication(): 
         with open(path_data+'\consists_of_medication.csv', 'r', encoding='utf-8-sig') as f:
             reader = csv.DictReader(f, delimiter=";", quotechar='"')
@@ -493,27 +492,55 @@ if __name__ == "__main__":
                         "Quantity"	TEXT,
                         "Price_per_piece"	TEXT,
                         "Medicine_code"	TEXT NOT NULL,
-                        "Supply_code"	TEXT NOT NULL,
-                        PRIMARY KEY("Medicine_code","Supply_code")
+                        "Medicine_supply_code"	TEXT NOT NULL,
+                        PRIMARY KEY("Medicine_supply_code","Medicine_code")
                     );'''
 
             d.createTable(create)
             for row in reader:
-                sql = f'INSERT INTO consists_of_medication VALUES("{row["Quantity"]}", "{row["Price_per_piece"]}", "{row["Medicine_code"]}", "{row["Supply_code"]}");\n'
+                sql = f'INSERT INTO consists_of_medication VALUES("{row["Quantity"]}", "{row["Price_per_piece"]}", "{row["Medicine_code"]}", "{row["Medicine_supply_code"]}");\n'
                 d.insert(sql, row)       
+
+    def load_contains(): 
+        with open(path_data+'\contains.csv', 'r', encoding='utf-8-sig') as f:
+            reader = csv.DictReader(f, delimiter=";", quotechar='"')
+            create = '''CREATE TABLE "contains" (
+                        "Event_code"	TEXT NOT NULL,
+                        "Document_code"	TEXT NOT NULL,
+                        PRIMARY KEY("Event_code","Document_code")
+                    );'''
+
+            d.createTable(create)
+            for row in reader:
+                sql = f'INSERT INTO contains VALUES("{row["Event_code"]}", "{row["Document_code"]}");\n'
+                d.insert(sql, row)
 
     def load_oversees(): 
         with open(path_data+'\oversees.csv', 'r', encoding='utf-8-sig') as f:
             reader = csv.DictReader(f, delimiter=";", quotechar='"')
             create = '''CREATE TABLE "oversees" (
-                    "Space_code"	TEXT NOT NULL,
-                    "Emp_ID"	TEXT NOT NULL,
-                    PRIMARY KEY("Space_code","Emp_ID")
-                );'''
+                        "Space_code"	TEXT NOT NULL,
+                        "Emp_ID"	TEXT NOT NULL,
+                        PRIMARY KEY("Space_code","Emp_ID")
+                    );'''
 
             d.createTable(create)
             for row in reader:
                 sql = f'INSERT INTO oversees VALUES("{row["Space_code"]}", "{row["Emp_ID"]}");\n'
+                d.insert(sql, row)
+
+    def load_participates_in(): 
+        with open(path_data+'\participates_in.csv', 'r', encoding='utf-8-sig') as f:
+            reader = csv.DictReader(f, delimiter=";", quotechar='"')
+            create = '''CREATE TABLE "participates_in" (
+                        "Event_code"	TEXT NOT NULL,
+                        "Animal_ID"	TEXT NOT NULL,
+                        PRIMARY KEY("Event_code","Animal_ID")
+                    );''' 
+
+            d.createTable(create)
+            for row in reader:
+                sql = f'INSERT INTO participates_in VALUES("{row["Event_code"]}", "{row["Animal_ID"]}");\n'
                 d.insert(sql, row)
 
     def receive_input():
@@ -559,6 +586,8 @@ if __name__ == "__main__":
     load_belongs_in_medication()
     load_consists_of_medication()
     load_oversees()
+    load_contains()
+    load_cares_for()
 
     receive_input()
 
