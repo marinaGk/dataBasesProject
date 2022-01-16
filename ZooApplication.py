@@ -31,7 +31,6 @@ class DataModel():
                 if statement.strip():
                     self.cursor.execute(statement)
                     sql_time = time.perf_counter() - t1
-                    print("Query executed.")
             if show:
                 for row in self.cursor.fetchall():
                     print(", ".join([str(item)for item in row]))
@@ -102,7 +101,13 @@ if __name__ == "__main__":
             d.createTable(create)
             for row in reader:
                 sql = f'INSERT INTO ANIMAL VALUES("{row["Animal_ID"]}", "{row["Name"]}","{row["Sex"]}", "{row["Age"]}", "{row["Date_of_birth"]}", "{row["Origin"]}", "{row["Date_of_arrival"]}", "{row["Diseases"]}", "{row["Species_ID"]}", "{row["Diet_program_code"]}", "{row["Medication_code"]}", "{row["Space_code"]}");\n'             
-                d.insert(sql, row)   
+                d.insert(sql, row)
+        sql='UPDATE ANIMAL SET Date_of_arrival=NULL WHERE Date_of_arrival="";'
+        d.executeSQL(sql, show = True)
+        sql='UPDATE ANIMAL SET Diseases=NULL WHERE Diseases="";'
+        d.executeSQL(sql, show = True)
+        sql = 'UPDATE ANIMAL SET Medication_code=NULL WHERE Medication_code="";'
+        d.executeSQL(sql, show = True)
 
     def load_ANIMAL_CARE_EMPLOYEE(): 
         with open(path_data+'\ANIMAL_CARE_EMPLOYEE.csv', 'r', encoding='utf-8-sig') as f:
@@ -167,6 +172,8 @@ if __name__ == "__main__":
             for row in reader:
                 sql = f'INSERT INTO DIET_PROGRAM VALUES("{row["Diet_program_code"]}", "{row["Start_date"]}", "{row["End_date"]}");\n'             
                 d.insert(sql, row)
+        sql='UPDATE DIET_PROGRAM SET End_date=NULL WHERE End_date="";'
+        d.executeSQL(sql, show = True)
 
     def load_EMPLOYEE(): 
         with open(path_data+'\EMPLOYEE.csv', 'r', encoding='utf-8-sig') as f:
@@ -202,6 +209,10 @@ if __name__ == "__main__":
             for row in reader:
                 sql = f'INSERT INTO ENTRANCE_DOCUMENT VALUES("{row["Document_code"]}", "{row["Price"]}", "{row["Reservation_number"]}", "{row["Sale_code"]}");\n'
                 d.insert(sql, row)
+        sql='UPDATE ENTRANCE_DOCUMENT SET Reservation_number=NULL WHERE Reservation_number="";'
+        d.executeSQL(sql, show = True)
+        sql='UPDATE ENTRANCE_DOCUMENT SET Sale_code=NULL WHERE Sale_code="";'
+        d.executeSQL(sql, show = True)
 
     def load_EVENT(): 
         with open(path_data+'\EVENT.csv', 'r', encoding='utf-8-sig') as f:
@@ -265,6 +276,8 @@ if __name__ == "__main__":
             for row in reader:
                 sql = f'INSERT INTO MEDICATION VALUES("{row["Medication_code"]}", "{row["Start_date"]}", "{row["End_date"]}");\n'
                 d.insert(sql, row)
+        sql='UPDATE MEDICATION SET End_date=NULL WHERE End_date="";'
+        d.executeSQL(sql, show = True)
 
     def load_MEDICINE(): 
         with open(path_data+'\MEDICINE.csv', 'r', encoding='utf-8-sig') as f:
@@ -325,6 +338,8 @@ if __name__ == "__main__":
             for row in reader:
                 sql = f'INSERT INTO SALE_CATEGORY VALUES("{row["Sale_code"]}", "{row["Required_documents"]}", "{row["Sale_percentage"]}");\n'
                 d.insert(sql, row)
+        sql='UPDATE SALE_CATEGORY SET Required_documents=NULL WHERE Required_documents="";'
+        d.executeSQL(sql, show = True)
 
     def load_SPACE(): 
         with open(path_data+'\SPACE.csv', 'r', encoding='utf-8-sig') as f:
@@ -341,6 +356,8 @@ if __name__ == "__main__":
             for row in reader:
                 sql = f'INSERT INTO SPACE VALUES("{row["Space_code"]}", "{row["Name"]}", "{row["Location"]}", "{row["Op_hours"]}");\n'             
                 d.insert(sql, row)
+        sql='UPDATE SPACE SET Op_hours=NULL WHERE Op_hours="";'
+        d.executeSQL(sql, show = True)
 
     def load_SPACE_EMPLOYEE(): 
         with open(path_data+'\SPACE_EMPLOYEE.csv', 'r', encoding='utf-8-sig') as f:
@@ -393,6 +410,10 @@ if __name__ == "__main__":
             for row in reader:
                 sql = f'INSERT INTO SUPPLIER VALUES("{row["Supplier_ID"]}", "{row["Name"]}", "{row["HQ"]}", "{row["Supply_category"]}", "{row["TelNum"]}", "{row["E-mail"]}", "{row["Description"]}");\n'
                 d.insert(sql, row)
+        sql='UPDATE SUPPLIER SET TelNum=NULL WHERE TelNum="";'
+        d.executeSQL(sql, show = True)
+        sql='UPDATE SUPPLIER SET Description=NULL WHERE Description="";'
+        d.executeSQL(sql, show = True)
 
     def load_SUPPLY(): 
         with open(path_data+'\SUPPLY.csv', 'r', encoding='utf-8-sig') as f:
@@ -448,6 +469,8 @@ if __name__ == "__main__":
             create = '''CREATE TABLE "belongs_in_diet" (
                         "Food_type_code"	TEXT NOT NULL,
                         "Diet_program_code"	TEXT NOT NULL,
+                        "Feeding_quantity"	TEXT,
+                        "Feeding_frequency"	TEXT,
                         FOREIGN KEY("Food_type_code") REFERENCES "FOOD_TYPE"("Food_type_code"),
                         FOREIGN KEY("Diet_program_code") REFERENCES "DIET_PROGRAM"("Diet_program_code"),
                         PRIMARY KEY("Food_type_code","Diet_program_code")
@@ -455,7 +478,7 @@ if __name__ == "__main__":
 
             d.createTable(create)
             for row in reader:
-                sql = f'INSERT INTO belongs_in_diet VALUES("{row["Food_type_code"]}", "{row["Diet_program_code"]}");\n'
+                sql = f'INSERT INTO belongs_in_diet VALUES("{row["Food_type_code"]}", "{row["Diet_program_code"]}", "{row["Feeding_quantity"]}", "{row["Feeding_frequency"]}");\n'
                 d.insert(sql, row)
 
     def load_belongs_in_medication(): 
@@ -496,7 +519,7 @@ if __name__ == "__main__":
             reader = csv.DictReader(f, delimiter=";", quotechar='"')
             create = '''CREATE TABLE "consists_of_diet" (
                         "Quantity"	TEXT,
-                        "Price"	TEXT,
+                        "Price_per_kg"	TEXT,
                         "Food_supply_code"	TEXT NOT NULL,
                         "Food_type_code"	TEXT NOT NULL,
                         FOREIGN KEY("Food_supply_code") REFERENCES "FOOD_SUPPLY"("Food_supply_code"),
@@ -506,7 +529,7 @@ if __name__ == "__main__":
 
             d.createTable(create)
             for row in reader:
-                sql = f'INSERT INTO consists_of_diet VALUES("{row["Quantity"]}", "{row["Price"]}", "{row["Food_supply_code"]}", "{row["Food_type_code"]}");\n'
+                sql = f'INSERT INTO consists_of_diet VALUES("{row["Quantity"]}", "{row["Price_per_kg"]}", "{row["Food_supply_code"]}", "{row["Food_type_code"]}");\n'
                 d.insert(sql, row)
 
     def load_consists_of_medication(): 
@@ -589,6 +612,7 @@ if __name__ == "__main__":
             else: 
                 sql = user_input
                 d.executeSQL(sql, show = True)
+                print("Query executed. \n")
 
     load_ANIMAL()
     load_DIET_PROGRAM()
