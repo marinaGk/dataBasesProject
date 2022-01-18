@@ -41,6 +41,7 @@ class DataModel():
             return False
 
     def createTable(self, sql): 
+        #χρησιμοποιείται για τη δημιουργία πίνακα, εκτελεί την εντολή
         self.cursor.execute(sql)
 
     def readTable(self, table):
@@ -70,7 +71,6 @@ if __name__ == "__main__":
         filename = "zoo.db"
         open(filename, 'w').close()
         print("File rewritten.")
-
     
     dbfile = "zoo.db"
     d = DataModel(dbfile) 
