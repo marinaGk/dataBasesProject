@@ -41,7 +41,6 @@ class DataModel():
             return False
 
     def createTable(self, sql): 
-        #χρησιμοποιείται για τη δημιουργία πίνακα, εκτελεί την εντολή
         self.cursor.execute(sql)
 
     def readTable(self, table):
@@ -71,9 +70,12 @@ if __name__ == "__main__":
         filename = "zoo.db"
         open(filename, 'w').close()
         print("File rewritten.")
+
     
     dbfile = "zoo.db"
     d = DataModel(dbfile) 
+    sql = "PRAGMA foreign_keys = ON;"
+    d.executeSQL(sql, True)
 
     def load_ANIMAL():
         with open(path_data+'\ANIMAL.csv', 'r', encoding='utf-8-sig') as f:
@@ -87,15 +89,15 @@ if __name__ == "__main__":
                         "Origin"	TEXT,
                         "Date_of_arrival"	INTEGER,
                         "Diseases"	TEXT,
-                        "Species_ID"	TEXT NOT NULL,
+                        "Species_ID"	TEXT,
                         "Diet_program_code"	TEXT,
                         "Medication_code"	TEXT,
                         "Space_code"	TEXT,
                         PRIMARY KEY("Animal_ID"),
-                        FOREIGN KEY("Species_ID") REFERENCES "SPECIES"("Species_ID"),
-                        FOREIGN KEY("Diet_program_code") REFERENCES "DIET_PROGRAM"("Diet_program_code"),
-                        FOREIGN KEY("Medication_code") REFERENCES "MEDICATION"("Medication_code"),
-                        FOREIGN KEY("Space_code") REFERENCES "SPACE"("Space_code")
+                        FOREIGN KEY("Species_ID") REFERENCES "SPECIES"("Species_ID") ON DELETE CASCADE ON UPDATE CASCADE ,
+                        FOREIGN KEY("Diet_program_code") REFERENCES "DIET_PROGRAM"("Diet_program_code") ON DELETE CASCADE ON UPDATE CASCADE,
+                        
+                        FOREIGN KEY("Space_code") REFERENCES "SPACE"("Space_code") ON DELETE CASCADE ON UPDATE CASCADE
                     );'''
 
             d.createTable(create)
@@ -116,14 +118,14 @@ if __name__ == "__main__":
                         "Animal_care_emp_ID"	TEXT NOT NULL,
                         "Emp_category"	TEXT,
                         PRIMARY KEY("Animal_care_emp_ID"),
-                        FOREIGN KEY("Animal_care_emp_ID") REFERENCES "EMPLOYEE"("Employee_ID")
+                        FOREIGN KEY("Animal_care_emp_ID") REFERENCES "EMPLOYEE"("Employee_ID") ON DELETE CASCADE ON UPDATE CASCADE
                     );'''
 
             d.createTable(create)
             for row in reader:
                 sql = f'INSERT INTO ANIMAL_CARE_EMPLOYEE VALUES("{row["Animal_care_emp_ID"]}", "{row["Emp_category"]}");\n'
-                d.insert(sql, row)  
-
+                d.insert(sql, row)
+ 
     def load_CARD_OWNER(): 
         with open(path_data+'\CARD_OWNER.csv', 'r', encoding='utf-8-sig') as f:
             reader = csv.DictReader(f, delimiter=";", quotechar='"')
@@ -133,9 +135,9 @@ if __name__ == "__main__":
                         "Status"	TEXT,
                         "Visits"	INTEGER,
                         "TelNumber"	INTEGER,
-                        "Card_code"	TEXT NOT NULL,
+                        "Card_code"	TEXT,
                         PRIMARY KEY("Owner_ID"),
-                        FOREIGN KEY("Card_code") REFERENCES "YEARLY_CARD"("Card_code")
+                        FOREIGN KEY("Card_code") REFERENCES "YEARLY_CARD"("Card_code") ON DELETE CASCADE ON UPDATE CASCADE
                     );'''
 
             d.createTable(create)
@@ -150,7 +152,7 @@ if __name__ == "__main__":
                         "CustSup_emp_ID"	TEXT NOT NULL,
                         "Emp_category"	TEXT,
                         PRIMARY KEY("CustSup_emp_ID"),
-                        FOREIGN KEY("CustSup_emp_ID") REFERENCES "EMPLOYEE"("Employee_ID")
+                        FOREIGN KEY("CustSup_emp_ID") REFERENCES "EMPLOYEE"("Employee_ID") ON DELETE CASCADE ON UPDATE CASCADE
                     );'''
 
             d.createTable(create)
@@ -198,11 +200,10 @@ if __name__ == "__main__":
             create = '''CREATE TABLE "ENTRANCE_DOCUMENT" (
                         "Document_code"	TEXT NOT NULL,
                         "Price"	TEXT,
-                        "Reservation_number"	TEXT,
+                        "Reservation_number" TEXT,
                         "Sale_code"	TEXT,
-                        FOREIGN KEY("Sale_code") REFERENCES "SALE_CATEGORY"("Sale_code"),
-                        PRIMARY KEY("Document_code"),
-                        FOREIGN KEY("Reservation_number") REFERENCES "RESERVATION"("Reservation_number")
+                        
+                        PRIMARY KEY("Document_code")
                     );'''
 
             d.createTable(create)
@@ -224,7 +225,7 @@ if __name__ == "__main__":
                         "Duration"	TEXT,
                         "Weekly_program"	TEXT,
                         "Event_space_code"	TEXT,
-                        FOREIGN KEY("Event_space_code") REFERENCES "EVENT"("Event_code"),
+                        FOREIGN KEY("Event_space_code") REFERENCES "SPACE"("Space_code") ON DELETE CASCADE ON UPDATE CASCADE,
                         PRIMARY KEY("Event_code")
                     );'''
 
@@ -238,7 +239,7 @@ if __name__ == "__main__":
             reader = csv.DictReader(f, delimiter=";", quotechar='"')
             create = '''CREATE TABLE "FOOD_SUPPLY" (
                         "Food_supply_code"	TEXT NOT NULL,
-                        FOREIGN KEY("Food_supply_code") REFERENCES "SUPPLY"("Supply_code"),
+                        FOREIGN KEY("Food_supply_code") REFERENCES "SUPPLY"("Supply_code") ON DELETE CASCADE ON UPDATE CASCADE,
                         PRIMARY KEY("Food_supply_code")
                     );'''
 
@@ -299,7 +300,7 @@ if __name__ == "__main__":
             reader = csv.DictReader(f, delimiter=";", quotechar='"')
             create = '''CREATE TABLE "MEDICINE_SUPPLY" (
                         "Medicine_supply_code"	TEXT NOT NULL,
-                        FOREIGN KEY("Medicine_supply_code") REFERENCES "SUPPLY"("Supply_code"),
+                        FOREIGN KEY("Medicine_supply_code") REFERENCES "SUPPLY"("Supply_code") ON DELETE CASCADE ON UPDATE CASCADE,
                         PRIMARY KEY("Medicine_supply_code")
                     );'''
 
@@ -312,7 +313,7 @@ if __name__ == "__main__":
         with open(path_data+'\RESERVATION.csv', 'r', encoding='utf-8-sig') as f:
             reader = csv.DictReader(f, delimiter=";", quotechar='"')
             create = '''CREATE TABLE "RESERVATION" (
-                        "Reservation_number"	TEXT NOT NULL,
+                        "Reservation_number"	TEXT ,
                         "Name"	TEXT,
                         "Reservation_date"	INTEGER,
                         "Num_of_visitors"	INTEGER,
@@ -365,7 +366,7 @@ if __name__ == "__main__":
             create = '''CREATE TABLE "SPACE_EMPLOYEE" (
                         "Space_emp_ID"	TEXT NOT NULL,
                         "Emp_category"	TEXT,
-                        FOREIGN KEY("Space_emp_ID") REFERENCES "EMPLOYEE"("Employee_ID"),
+                        FOREIGN KEY("Space_emp_ID") REFERENCES "EMPLOYEE"("Employee_ID") ON DELETE CASCADE ON UPDATE CASCADE,
                         PRIMARY KEY("Space_emp_ID")
                     );'''
 
@@ -423,7 +424,7 @@ if __name__ == "__main__":
                         "Supply_date"	INTEGER,
                         "Price"	TEXT,
                         "Supplier_ID"	TEXT,
-                        FOREIGN KEY("Supplier_ID") REFERENCES "SUPPLIER"("Supplier_ID"),
+                        FOREIGN KEY("Supplier_ID") REFERENCES "SUPPLIER"("Supplier_ID") ON DELETE CASCADE ON UPDATE CASCADE,
                         PRIMARY KEY("Supply_code")
                     );''' 
 
@@ -438,7 +439,7 @@ if __name__ == "__main__":
             create = '''CREATE TABLE "TICKET" (
                         "Ticket_code"	TEXT NOT NULL,
                         "Ticket_date"	INTEGER,
-                        FOREIGN KEY("Ticket_code") REFERENCES "ENTRANCE_DOCUMENT"("Document_code"),
+                        FOREIGN KEY("Ticket_code") REFERENCES "ENTRANCE_DOCUMENT"("Document_code") ON DELETE CASCADE ON UPDATE CASCADE,
                         PRIMARY KEY("Ticket_code")
                     );'''
 
@@ -454,7 +455,7 @@ if __name__ == "__main__":
                         "Card_code"	TEXT NOT NULL,
                         "Start_date"	INTEGER,
                         "End_date"	INTEGER,
-                        FOREIGN KEY("Card_code") REFERENCES "ENTRANCE_DOCUMENT"("Document_code"),
+                        FOREIGN KEY("Card_code") REFERENCES "ENTRANCE_DOCUMENT"("Document_code") ON DELETE CASCADE ON UPDATE CASCADE,
                         PRIMARY KEY("Card_code")
                     );'''
 
@@ -471,8 +472,8 @@ if __name__ == "__main__":
                         "Diet_program_code"	TEXT NOT NULL,
                         "Feeding_quantity"	TEXT,
                         "Feeding_frequency"	TEXT,
-                        FOREIGN KEY("Food_type_code") REFERENCES "FOOD_TYPE"("Food_type_code"),
-                        FOREIGN KEY("Diet_program_code") REFERENCES "DIET_PROGRAM"("Diet_program_code"),
+                        FOREIGN KEY("Food_type_code") REFERENCES "FOOD_TYPE"("Food_type_code") ON DELETE CASCADE ON UPDATE CASCADE,
+                        FOREIGN KEY("Diet_program_code") REFERENCES "DIET_PROGRAM"("Diet_program_code") ON DELETE CASCADE ON UPDATE CASCADE,
                         PRIMARY KEY("Food_type_code","Diet_program_code")
                     );''' 
 
@@ -488,8 +489,8 @@ if __name__ == "__main__":
                         "Dosage"	TEXT,
                         "Medicine_code"	TEXT NOT NULL,
                         "Medication_code"	TEXT NOT NULL,
-                        FOREIGN KEY("Medication_code") REFERENCES "MEDICATION"("Medication_code"),
-                        FOREIGN KEY("Medicine_code") REFERENCES "MEDICINE"("Medicine_code"),
+                        FOREIGN KEY("Medication_code") REFERENCES "MEDICATION"("Medication_code") ON DELETE CASCADE ON UPDATE CASCADE,
+                        FOREIGN KEY("Medicine_code") REFERENCES "MEDICINE"("Medicine_code") ON DELETE CASCADE ON UPDATE CASCADE,
                         PRIMARY KEY("Medicine_code","Medication_code")
                     );'''
 
@@ -504,8 +505,8 @@ if __name__ == "__main__":
             create = '''CREATE TABLE "cares_for" (
                         "Animal_ID"	TEXT NOT NULL,
                         "Emp_ID"	TEXT NOT NULL,
-                        FOREIGN KEY("Animal_ID") REFERENCES "ANIMAL"("Animal_ID"),
-                        FOREIGN KEY("Emp_ID") REFERENCES "EMPLOYEE"("Employee_ID"),
+                        FOREIGN KEY("Animal_ID") REFERENCES "ANIMAL"("Animal_ID") ON DELETE CASCADE ON UPDATE CASCADE,
+                        FOREIGN KEY("Emp_ID") REFERENCES "ANIMAL_CARE_EMPLOYEE"("Animal_care_emp_ID") ON DELETE CASCADE ON UPDATE CASCADE,
                         PRIMARY KEY("Animal_ID","Emp_ID")
                     );''' 
 
@@ -521,9 +522,9 @@ if __name__ == "__main__":
                         "Quantity"	TEXT,
                         "Price_per_kg"	TEXT,
                         "Food_supply_code"	TEXT NOT NULL,
-                        "Food_type_code"	TEXT NOT NULL,
-                        FOREIGN KEY("Food_supply_code") REFERENCES "FOOD_SUPPLY"("Food_supply_code"),
-                        FOREIGN KEY("Food_type_code") REFERENCES "FOOD_TYPE"("Food_type_code"),
+                        "Food_type_code"	TEXT,
+                        FOREIGN KEY("Food_supply_code") REFERENCES "FOOD_SUPPLY"("Food_supply_code") ON DELETE CASCADE ON UPDATE CASCADE,
+                        FOREIGN KEY("Food_type_code") REFERENCES "FOOD_TYPE"("Food_type_code") ON DELETE CASCADE ON UPDATE CASCADE,
                         PRIMARY KEY("Food_supply_code","Food_type_code")
                     );''' 
 
@@ -540,8 +541,8 @@ if __name__ == "__main__":
                         "Price_per_piece"	TEXT,
                         "Medicine_code"	TEXT NOT NULL,
                         "Medicine_supply_code"	TEXT NOT NULL,
-                        FOREIGN KEY("Medicine_supply_code") REFERENCES "MEDICINE_SUPPLY"("Medicine_supply_code"),
-                        FOREIGN KEY("Medicine_code") REFERENCES "MEDICINE"("Medicine_code"),
+                        FOREIGN KEY("Medicine_supply_code") REFERENCES "MEDICINE_SUPPLY"("Medicine_supply_code") ON DELETE CASCADE ON UPDATE CASCADE,
+                        FOREIGN KEY("Medicine_code") REFERENCES "MEDICINE"("Medicine_code") ON DELETE CASCADE ON UPDATE CASCADE,
                         PRIMARY KEY("Medicine_supply_code","Medicine_code")
                     );'''
 
@@ -554,10 +555,10 @@ if __name__ == "__main__":
         with open(path_data+'\contains.csv', 'r', encoding='utf-8-sig') as f:
             reader = csv.DictReader(f, delimiter=";", quotechar='"')
             create = '''CREATE TABLE "contains" (
-                        "Event_code"	TEXT NOT NULL,
+                        "Event_code"	TEXT,
                         "Document_code"	TEXT NOT NULL,
-                        FOREIGN KEY("Event_code") REFERENCES "EVENT"("Event_code"),
-                        FOREIGN KEY("Document_code") REFERENCES "ENTRANCE_DOCUMENT"("Document_code"),
+                        FOREIGN KEY("Event_code") REFERENCES "EVENT"("Event_code") ON DELETE CASCADE ON UPDATE CASCADE,
+                        FOREIGN KEY("Document_code") REFERENCES "ENTRANCE_DOCUMENT"("Document_code") ON DELETE CASCADE ON UPDATE CASCADE,
                         PRIMARY KEY("Event_code","Document_code")
                     );'''
 
@@ -571,9 +572,9 @@ if __name__ == "__main__":
             reader = csv.DictReader(f, delimiter=";", quotechar='"')
             create = '''CREATE TABLE "oversees" (
                         "Space_code"	TEXT NOT NULL,
-                        "Emp_ID"	TEXT NOT NULL,
-                        FOREIGN KEY("Emp_ID") REFERENCES "EMPLOYEE"("Employee_ID"),
-                        FOREIGN KEY("Space_code") REFERENCES "SPACE"("Space_code"),
+                        "Emp_ID"	TEXT,
+                        FOREIGN KEY("Emp_ID") REFERENCES "SPACE_EMPLOYEE"("Space_emp_ID") ON DELETE CASCADE ON UPDATE CASCADE,
+                        FOREIGN KEY("Space_code") REFERENCES "SPACE"("Space_code") ON DELETE CASCADE ON UPDATE CASCADE,
                         PRIMARY KEY("Space_code","Emp_ID")
                     );'''
 
@@ -586,10 +587,10 @@ if __name__ == "__main__":
         with open(path_data+'\participates_in.csv', 'r', encoding='utf-8-sig') as f:
             reader = csv.DictReader(f, delimiter=";", quotechar='"')
             create = '''CREATE TABLE "participates_in" (
-                        "Event_code"	TEXT NOT NULL,
-                        "Animal_ID"	TEXT NOT NULL,
-                        FOREIGN KEY("Animal_ID") REFERENCES "ANIMAL"("Animal_ID"),
-                        FOREIGN KEY("Event_code") REFERENCES "EVENT"("Event_code"),
+                        "Event_code"	TEXT,
+                        "Animal_ID"	TEXT,
+                        FOREIGN KEY("Animal_ID") REFERENCES "ANIMAL"("Animal_ID") ON DELETE CASCADE ON UPDATE CASCADE,
+                        FOREIGN KEY("Event_code") REFERENCES "EVENT"("Event_code") ON DELETE CASCADE ON UPDATE CASCADE,
                         PRIMARY KEY("Event_code","Animal_ID")
                     );''' 
 
@@ -614,28 +615,34 @@ if __name__ == "__main__":
                 d.executeSQL(sql, show = True)
                 print("Query executed. \n")
 
-    load_ANIMAL()
-    load_DIET_PROGRAM()
-    load_EVENT()
-    load_FOOD_SUPPLY()
-    load_FOOD_TYPE()
-    load_SPACE()
+
     load_SPECIES()
-    load_SUPPLIER()
-    load_SUPPLY()
-    load_ANIMAL_CARE_EMPLOYEE()
-    load_CARD_OWNER()
-    load_CUSTOMER_SUPPORT()
-    load_EMPLOYEE()
-    load_ENTRANCE_DOCUMENT()
+    load_SPACE()
     load_MEDICATION()
+    load_DIET_PROGRAM()
+    load_EMPLOYEE()
+    load_FOOD_TYPE()
     load_MEDICINE()
-    load_MEDICINE_SUPPLY()
     load_RESERVATION()
     load_SALE_CATEGORY()
+    load_SUPPLIER()
+
+    load_ANIMAL()
+    load_EVENT()
+
+    load_SUPPLY()
+    load_FOOD_SUPPLY()
+    load_MEDICINE_SUPPLY()
+    
+    load_ANIMAL_CARE_EMPLOYEE()
+    load_CUSTOMER_SUPPORT()
     load_SPACE_EMPLOYEE()
+
+    load_ENTRANCE_DOCUMENT()
     load_TICKET()
     load_YEARLY_CARD()
+    load_CARD_OWNER()
+
     load_belongs_in_diet()
     load_consists_of_diet()
     load_participates_in()
